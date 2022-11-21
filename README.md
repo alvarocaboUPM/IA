@@ -30,5 +30,11 @@
 - Si no funciona el script puedes instalarlos individualmente
 
 ```shell
-    pip install folium PyQt5 vincenty geopy
+    pip install folium PyQt5 geopy pyqtwebengine
+```
+
+4. Instalar el motor gráfico y la función de distancias
+
+```shell
+   pip install pyqtwebengine
 ```
