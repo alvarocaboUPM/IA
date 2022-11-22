@@ -24,17 +24,23 @@
 3. Instalar librerías necesarias:
 
 ```shell
-   pip install -r requirements.txt
+   pip install -r Utils/requirements.txt
 ```
 
 - Si no funciona el script puedes instalarlos individualmente
 
 ```shell
-    pip install folium PyQt5 geopy pyqtwebengine
+    pip install folium PyQt5 geopy
 ```
 
-4. Instalar el motor gráfico y la función de distancias
+1. Instalar el motor gráfico
 
 ```shell
    pip install pyqtwebengine
+```
+
+### Running project
+
+```shell
+   python main.py
 ```
