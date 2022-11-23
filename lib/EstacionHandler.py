@@ -1,12 +1,13 @@
 from geopy.geocoders import Nominatim
 from lib import Estacion
 
-file="lib/data.csv"
+file="lib/aux_data.csv"
 
 class EstacionHandler:
     locator = Nominatim(user_agent="telmove@gmx.com")
-    estaciones: Estacion = []
-    metromap = {}
+    estaciones= []
+    lineas={1:[], 2:[], 3:[],4:[]}
+    metromap= {}
 
     @staticmethod
     def populate():
@@ -29,6 +30,7 @@ class EstacionHandler:
         EstacionHandler.estaciones.append(Estacion(310, "Syrets"))
 
         # Escribir en el fichero de texto
+        stat: Estacion
         for stat in EstacionHandler.estaciones:
             stat.writeCoords()
 
@@ -43,8 +45,8 @@ class EstacionHandler:
             nam = split[1]
             latit = split[2]
             longit = split[3]
-            stat = Estacion.Estacion((num), nam,float(latit), float(longit))
+            stat = Estacion((num), nam,float(latit), float(longit))
+            EstacionHandler.lineas[stat.getLinea()].append(stat)
             EstacionHandler.estaciones.append(stat)
             EstacionHandler.metromap[num] = stat
-
 

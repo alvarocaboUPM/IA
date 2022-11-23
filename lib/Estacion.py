@@ -4,30 +4,32 @@ from geopy.distance import geodesic
 
 file="lib/data.csv"
 
-
 class Estacion:
     # Constructor de la clase estación
     def __init__(self, stnumber, stname, lat, long):
         self.name = stname
-        self.number = stnumber
+        self.number: int = stnumber
         self.lat = lat
         self.long = long
         
     # Busca latitud y longitud para cada estacion
     def writeCoords(self):
-        sm =";"
-        datfile = open(file, "a") 
-        wrstring = str(self.number) + sm + self.name
-        querytext = self.name + " Estacion, Kyiv"
-        curLoc = EstacionHandler.locator.geocode(querytext)
-        wrstring = wrstring + sm + str(curLoc.latitude) + sm + str(curLoc.longitude) + "\n"
-        self.lat = curLoc.latitude
-        self.long = curLoc.longitude
-        print(wrstring)
+        #Defines
+        sm =";"; cityname="Athens";wrstring = str(self.number) + sm + self.name
+        querytext = self.name + " Estacion, " + cityname
+        #Execution
+        datfile = open(file, "a")
+        coordenadas = EstacionHandler.locator.geocode(querytext)
+        wrstring = wrstring + sm + str(coordenadas.latitude) + sm + str(coordenadas.longitude) + "\n"
+        #Setting de la Estación
+        self.lat = coordenadas.latitude
+        self.long = coordenadas.longitude
+        #Escribo en el csv
         datfile.write(wrstring)
         datfile.close()
 
-    def print(self) -> None:
+    #Prints formated station
+    def toString(self):
         print(f"{self.name} | {self.number} | [{str(self.lat)}, {str(self.long)}]")
 
     # Devuelve la distancia en metros con otra estacion
@@ -36,12 +38,15 @@ class Estacion:
         there = (other.lat, other.long)
         return geodesic(here, there) * 1000.0
 
+    #Calcula la linea de metro de la estacion actual
+    def getLinea(self)->int: 
+        return int(float(self.number) // 100) #Redondeo hacia abajo (floor)
+
     # Devuelve las estaciones adyacentes en una lista
     def calcAdjacents(self):
         list = []
 
-        # Calcula la linea de metro de la estacion actual
-        stline = self.number // 100 #Redondeo hacia abajo (floor)
+        linea= Estacion.getLinea(self)
 
         # Casos especiales 319 y 321 por falta de 320
         if self.number == 319:
@@ -87,10 +92,10 @@ class Estacion:
             list.append(EstacionHandler.metromap[121])
 
         # Extremos
-        elif self.number % 100 == 27:
-            list.append(EstacionHandler.metromap[stline * 100 + 26])
-        elif self.number % 100 == 10:
-            list.append(EstacionHandler.metromap[stline * 100 + 11])
+        elif int(self.number) % 100 == 27:
+            list.append(EstacionHandler.metromap[linea * 100 + 26])
+        elif int(self.number) % 100 == 10:
+            list.append(EstacionHandler.metromap[linea * 100 + 11])
 
         # Demas estaciones
         else:
@@ -98,4 +103,3 @@ class Estacion:
             list.append(EstacionHandler.metromap[self.number - 1])
 
         return list
-

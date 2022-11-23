@@ -33,7 +33,7 @@
     pip install folium PyQt5 geopy
 ```
 
-1. Instalar el motor gráfico
+4. Instalar el motor gráfico
 
 ```shell
    pip install pyqtwebengine
