@@ -1,22 +1,26 @@
 from queue import PriorityQueue
+from lib import EstacionHandler, Estacion
 
 '''
 diccionario de arrays que tiene como key el nombre de la estación y como value el array de los vecinos de dicha estación
 calculamos el tiempo total como la suma de los caminos entre nodos vecinos y al final le sumamos el total de paradas realizadas por el metro*20s
 nuestra función recibe como parámetros de entrada el nodo de inicio y del final del trayecto
 '''
+
 ''' def reconstruct_path(came_from, actual, draw):
 		while actual in came_from:
         	actual = came_from[actual]
         	actual.make_path()
-        	draw() '''
-
+        	draw() 
+'''
 
 class Algoritmo():
+    #Empty path
+    path: Estacion = []
     #Constructor con punto de incio y fin
     def __init__(self, start, end, map):
-        self.start = lines_number_station[start]
-        self.end = lines_number_station[end]
+        self.start = EstacionHandler.metromap[start]
+        self.end = EstacionHandler.metromap[end]
         self.map = map
 
     def best_route(self):
@@ -72,5 +76,3 @@ class Algoritmo():
 
         return None
 
-    def h(self, p1, p2):
-        return geolocationdata.get_distance(p1, p2) / 100 * 60

@@ -1,8 +1,9 @@
 # MODULO GENERADOR DE DATOS
 
-from main import EstacionHandler
+from lib import EstacionHandler
 
+FILE="test/test_data.csv"
 if __name__ == '__main__':
     print("Generando datos... \n")
-    EstacionHandler.populate()
+    EstacionHandler.populate(FILE, True)
     print("Datos generados correctamente \n")

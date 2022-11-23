@@ -1,30 +1,47 @@
 from typing_extensions import Self
 from lib import EstacionHandler
 from geopy.distance import geodesic
+import requests, json
+from geopy.geocoders import Nominatim
+from geopy.location import Location
 
-file="lib/data.csv"
+GMAPS_KEY="AIzaSyAfODIWKl1TgUsvhJSF7JzMrEyhkznqKOw"
+GMAPS_URL="https://maps.googleapis.com/maps/api/distancematrix/json?"
 
 class Estacion:
     # Constructor de la clase estación
-    def __init__(self, stnumber, stname, lat, long):
+    def __init__(self, stnumber, stname, lat=0.0, long=0.0):
         self.name = stname
         self.number: int = stnumber
         self.lat = lat
         self.long = long
         
     # Busca latitud y longitud para cada estacion
-    def writeCoords(self):
+    def writeCoords(self, file):
         #Defines
         sm =";"; cityname="Athens";wrstring = str(self.number) + sm + self.name
-        querytext = self.name + " Estacion, " + cityname
+        keywords = ["station", "metro", "subway", "μετρό", "σταθμός", "underground"]
+        locator= Nominatim(user_agent="telmove@gmx.com")
+        i=0; querytext=None
         #Execution
         datfile = open(file, "a")
-        coordenadas = EstacionHandler.locator.geocode(querytext)
-        wrstring = wrstring + sm + str(coordenadas.latitude) + sm + str(coordenadas.longitude) + "\n"
-        #Setting de la Estación
-        self.lat = coordenadas.latitude
-        self.long = coordenadas.longitude
+        coordenadas: Location = None
+        while (coordenadas == None and i< len(keywords)):
+            querytext = self.name + " " + keywords[i] + ", " +cityname
+            coordenadas=locator.geocode(querytext)
+            i=i+1
+        
+        if(coordenadas!=None):
+            #Setting de la Estación
+            print(querytext)
+            self.lat = coordenadas.latitude
+            self.long = coordenadas.longitude
+        else:
+            self.lat = 0.0
+            self.long = 0.0
+        wrstring = wrstring + sm + str(self.lat) + sm + str(self.long) + "\n"
         #Escribo en el csv
+        print(wrstring)
         datfile.write(wrstring)
         datfile.close()
 
@@ -37,6 +54,21 @@ class Estacion:
         here = (self.lat, self.long)
         there = (other.lat, other.long)
         return geodesic(here, there) * 1000.0
+
+    def calcTime(self, other:Self):
+        here = (self.lat, self.long)
+        there = (other.lat, other.long)
+        r= requests.get(GMAPS_URL + 'origins = ' + here+
+                              '&destinations = ' + there +
+                              '&key = ' +GMAPS_KEY)
+        out= r.json()
+        print(json.dumps(out))
+
+        time = out['duration']['value']
+        print(time)
+        distance = out['distance']['value']
+        print(distance)
+
 
     #Calcula la linea de metro de la estacion actual
     def getLinea(self)->int: 
