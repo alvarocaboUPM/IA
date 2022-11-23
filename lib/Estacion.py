@@ -91,7 +91,7 @@ class Estacion:
             list.append(EstacionHandler.metromap[119])
             list.append(EstacionHandler.metromap[121])
 
-        # Extremos
+        # Princios y fines de Linea
         elif int(self.number) % 100 == 27:
             list.append(EstacionHandler.metromap[linea * 100 + 26])
         elif int(self.number) % 100 == 10:
