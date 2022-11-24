@@ -36,7 +36,7 @@ class MyApp(QWidget):
         
         st: Estacion
         for st in EstacionHandler.estaciones:
-            st.toString()
+            print(st.toString())
             l=st.getLinea()
             iColor: str = lines["COLOR"][l-1]
 

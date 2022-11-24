@@ -1,9 +1,15 @@
 # MODULO GENERADOR DE DATOS
 
 from lib import EstacionHandler
+import os
+from dotenv import dotenv_values
 
-FILE="test/test_data.csv"
+
 if __name__ == '__main__':
-    print("Generando datos... \n")
-    EstacionHandler.populate(FILE, True)
+    fileE = dotenv_values(".env")["FILE_ESTACIONES"]
+    fileM = dotenv_values(".env")["FILE_MATRIX"]
+
+    print("Generando datos en archivo "+fileE+"... ")
+    EstacionHandler.read(fileE)
+    EstacionHandler.matrix(fileM)
     print("Datos generados correctamente \n")

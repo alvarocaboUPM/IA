@@ -1,12 +1,11 @@
-from typing_extensions import Self
 from lib import EstacionHandler
+
+from typing_extensions import Self
+
 from geopy.distance import geodesic
-import requests, json
 from geopy.geocoders import Nominatim
 from geopy.location import Location
 
-GMAPS_KEY="AIzaSyAfODIWKl1TgUsvhJSF7JzMrEyhkznqKOw"
-GMAPS_URL="https://maps.googleapis.com/maps/api/distancematrix/json?"
 
 class Estacion:
     # Constructor de la clase estación
@@ -25,20 +24,21 @@ class Estacion:
         i=0; querytext=None
         #Execution
         datfile = open(file, "a")
-        coordenadas: Location = None
-        while (coordenadas == None and i< len(keywords)):
-            querytext = self.name + " " + keywords[i] + ", " +cityname
-            coordenadas=locator.geocode(querytext)
-            i=i+1
-        
-        if(coordenadas!=None):
-            #Setting de la Estación
-            print(querytext)
-            self.lat = coordenadas.latitude
-            self.long = coordenadas.longitude
-        else:
-            self.lat = 0.0
-            self.long = 0.0
+
+        #Utilizamos la API para rellenar las coordenadas
+        if(self.lat == 0.0 and self.long == 0.0):
+            coordenadas: Location = None
+            while (coordenadas == None and i< len(keywords)):
+                querytext = self.name + " " + keywords[i] + ", " +cityname
+                coordenadas=locator.geocode(querytext)
+                i=i+1
+            
+            if(coordenadas!=None):
+                #Setting de la Estación
+                print(querytext)
+                self.lat = coordenadas.latitude
+                self.long = coordenadas.longitude
+
         wrstring = wrstring + sm + str(self.lat) + sm + str(self.long) + "\n"
         #Escribo en el csv
         print(wrstring)
@@ -47,28 +47,20 @@ class Estacion:
 
     #Prints formated station
     def toString(self):
-        print(f"{self.name} | {self.number} | [{str(self.lat)}, {str(self.long)}]")
+        return f"{self.name} | {self.number} | [{str(self.lat)}, {str(self.long)}]"
 
     # Devuelve la distancia en metros con otra estacion
     def calcDistance(self, other: Self):
         here = (self.lat, self.long)
         there = (other.lat, other.long)
-        return geodesic(here, there) * 1000.0
+        return geodesic(here, there).km
 
-    def calcTime(self, other:Self):
-        here = (self.lat, self.long)
-        there = (other.lat, other.long)
-        r= requests.get(GMAPS_URL + 'origins = ' + here+
-                              '&destinations = ' + there +
-                              '&key = ' +GMAPS_KEY)
-        out= r.json()
-        print(json.dumps(out))
-
-        time = out['duration']['value']
-        print(time)
-        distance = out['distance']['value']
-        print(distance)
-
+    # Devuelve la distancia en metros con otra estacion
+    def calcTime(self, other:Self) -> float:
+        mean_vel= 13.5
+        dist = self.calcDistance(other)
+        #v = e/t -> t = e(km)/v(km/h)
+        return dist/mean_vel
 
     #Calcula la linea de metro de la estacion actual
     def getLinea(self)->int: 

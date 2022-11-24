@@ -4,13 +4,13 @@ from lib import EstacionHandler, Estacion
 '''
 diccionario de arrays que tiene como key el nombre de la estación y como value el array de los vecinos de dicha estación
 calculamos el tiempo total como la suma de los caminos entre nodos vecinos y al final le sumamos el total de paradas realizadas por el metro*20s
-nuestra función recibe como parámetros de entrada el nodo de inicio y del final del trayecto
+nuestra función recibe como parámetros de entrada el st de inicio y del final del trayecto
 '''
 
-''' def reconstruct_path(came_from, actual, draw):
-		while actual in came_from:
-        	actual = came_from[actual]
-        	actual.make_path()
+''' def reconstruct_path(anterior, curr, draw):
+		while curr in anterior:
+        	curr = anterior[curr]
+        	curr.make_path()
         	draw() 
 '''
 
@@ -18,61 +18,60 @@ class Algoritmo():
     #Empty path
     path: Estacion = []
     #Constructor con punto de incio y fin
-    def __init__(self, start, end, map):
+    def __init__(self, start, end):
         self.start = EstacionHandler.metromap[start]
         self.end = EstacionHandler.metromap[end]
-        self.map = map
+        self.map = EstacionHandler.metromap
 
     def best_route(self):
+        #INIT
         pasos = 0
-        open_set = PriorityQueue()
-        open_set.put((0, pasos, self.start))
-        came_from = {}
+        openQ = PriorityQueue()
+        openQ.put((0, pasos, self.start)) 
+        anterior = {}
         g_n = {}
-        for nodo in self.map:
-            g_n[nodo] = float("inf")
+        #ENDINIT
+        st : Estacion
+        for st in self.map:
+            g_n[st] = float("inf")
         #g_n = {spot: float("inf") for row in grid for spot in row}
         g_n[self.start] = 0
         #f_n = {spot: float("inf") for row in grid for spot in row}
         f_n = {}
-        for nodo in self.map:
-            f_n[nodo] = float("inf")
+        for st in self.map:
+            f_n[st] = float("inf")
         # poner nuestra estimación
         f_n[self.start] = self.h(self.start, self.end)
-        open_set_hash = {self.start}
+        closeQ = {self.start}
 
-        while not open_set.empty():
-            # for event in pygame.event.get():
-            # 	if event.type == pygame.QUIT:
-            # 		pygame.quit()
+        while not openQ.empty():
+            curr = openQ.get()[2]
+            closeQ.remove(curr)
 
-            actual = open_set.get()[2]
-            open_set_hash.remove(actual)
-
-            if actual == self.end:
-                res = [actual]
-                while actual in came_from:
-                    actual = came_from[actual]
-                    res.append(actual)
+            if curr == self.end:
+                res = [curr]
+                while curr in anterior:
+                    curr = anterior[curr]
+                    res.append(curr)
 
                 return list(reversed(res))
 
-            for vecino in self.map[actual]:
+            for vecino in self.map[curr]:
                 # función de ruben y vinh que devuelve el tiempo entre estaciones vecinas
-                temp_g_n = g_n[actual] + get_time(actual, vecino)
+                temp_g_n = g_n[curr] + Estacion.calcTime(curr, vecino)
                 if temp_g_n < g_n[vecino]:
-                    came_from[vecino] = actual
+                    anterior[vecino] = curr
                     g_n[vecino] = temp_g_n
                     f_n[vecino] = temp_g_n + self.h(vecino, self.end)
-                    if vecino not in open_set_hash:
+                    if vecino not in closeQ:
                         pasos += 1
-                        open_set.put((f_n[vecino], pasos, vecino))
-                        open_set_hash.add(vecino)
-                        # vecino.make_open() # grafico: marcar nodo como abierto
+                        openQ.put((f_n[vecino], pasos, vecino))
+                        closeQ.add(vecino)
+                        # vecino.make_open() # grafico: marcar st como abierto
 
-            if actual != self.start:
+            if curr != self.start:
                 pass
-                # actual.make_closed() # grafico: marcar nodo como visitado
+                # curr.make_closed() # grafico: marcar st como visitado
 
         return None
 
