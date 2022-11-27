@@ -70,6 +70,7 @@ class Algoritmo():
                         # vecino.make_open() # grafico: marcar st como abierto
 
             if curr != self.start:
+
                 pass
                 # curr.make_closed() # grafico: marcar st como visitado
 

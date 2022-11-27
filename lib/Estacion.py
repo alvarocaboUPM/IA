@@ -1,3 +1,4 @@
+from dotenv import dotenv_values
 import pandas
 
 from typing_extensions import Self
@@ -5,6 +6,7 @@ from typing_extensions import Self
 from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 from geopy.location import Location
+
 
 
 class Estacion:
@@ -63,17 +65,17 @@ class Estacion:
         return int(float(self.number) // 100) #Redondeo hacia abajo (floor)
 
     # Devuelve las estaciones adyacentes en una lista
-    def calcAdjacents(self, map, tr, ok =0):
+    def calcAdjacents(self, map, ok =0):
         list=[]
         
         #Principio linea
         if(int(self.number) % 100 !=1):
-            list.append(map[int(self.number) - 1].toString())
+            list.append(map[int(self.number) - 1])
         #Fin de linea
         if(map.get(int(self.number) + 1) is not None):
-            list.append(map[int(self.number) + 1].toString())
+            list.append(map[int(self.number) + 1])
         
         #Trasbordos
         if(self.trasbordo != -1 and ok <1):
-            list +=(Estacion.calcAdjacents(map[int(self.trasbordo)],map,tr,1))
+            list +=(Estacion.calcAdjacents(map[int(self.trasbordo)],map,1))
         return list

@@ -1,5 +1,10 @@
 from pprint import pprint
+
+from dotenv import dotenv_values
 from lib import Estacion
+
+fileE = dotenv_values(".env")["FILE_ESTACIONES"]
+fileM = dotenv_values(".env")["FILE_MATRIX"]
 
 class EstacionHandler:
     estaciones = []
@@ -7,11 +12,12 @@ class EstacionHandler:
     coolmap={}
     trasbordos={}
 
+
     @staticmethod
-    def populate(file):
+    def populate():
         """Función que rellena un csv con los datos de posicion de todas las estaciones"""
         # Trunca el fichero de texto
-        datfile = open(file, "w")
+        datfile = open(fileE, "w")
         datfile.write("ID;Estacion;Latitud;Longitud\n")
         datfile.close()
 
@@ -84,12 +90,13 @@ class EstacionHandler:
         # Escribir en el fichero de texto
         stat: Estacion
         for stat in EstacionHandler.estaciones:
-            stat.writeCoords(stat,file)
-    
+            stat.writeCoords(stat,fileE)
+        EstacionHandler.read()
+        
     @staticmethod
-    def read(file):
+    def read():
         """ Lee las estaciones desde archivo"""
-        datfile = open(file, "r")
+        datfile = open(fileE, "r")
         statlines = datfile.readlines()
         statlines.pop(0)
         for curline in statlines:
@@ -102,14 +109,15 @@ class EstacionHandler:
             EstacionHandler.estaciones.append(stat)
             EstacionHandler.metromap[int(num)] = stat
             EstacionHandler.coolmap[int(num)] = stat.toString()
-
+        EstacionHandler.matrix()
 
     @staticmethod      
-    def matrix(file):
+    def matrix():
         """Crea la matriz de costes"""
-        datfile = open(file, "w")
+        datfile = open(fileM, "w")
         st:Estacion ;st2: Estacion
         i= len(EstacionHandler.metromap.values())
+        datfile.write(" ;")
         for st in EstacionHandler.metromap.values():
             if(i != 1):
                 datfile.write(st.name+";")
@@ -128,4 +136,4 @@ class EstacionHandler:
                     st2.trasbordo= st.number
                     EstacionHandler.trasbordos[st.name] = (st.number, st2.number)
             datfile.write(st.name+";"+append+"\n")
-        print(EstacionHandler.trasbordos)
+      
