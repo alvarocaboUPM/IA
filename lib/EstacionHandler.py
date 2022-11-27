@@ -1,19 +1,18 @@
+from pprint import pprint
 from lib import Estacion
 
 class EstacionHandler:
-    estaciones= []
-    lineas={1:[], 2:[], 3:[],4:[]}
+    estaciones = []
     metromap= {}
     coolmap={}
+    trasbordos={}
 
-    """Función que rellena un csv con los datos de posicion de todas las estaciones
-    """
     @staticmethod
     def populate(file):
-
+        """Función que rellena un csv con los datos de posicion de todas las estaciones"""
         # Trunca el fichero de texto
         datfile = open(file, "w")
-        datfile.write("")
+        datfile.write("ID;Estacion;Latitud;Longitud\n")
         datfile.close()
 
         # AQUI VAN LOS NOMBRES Y NUMEROS DE LAS ESTACIONES
@@ -30,10 +29,10 @@ class EstacionHandler:
         EstacionHandler.estaciones.append(Estacion.Estacion(109, "Omonia"))
         EstacionHandler.estaciones.append(Estacion.Estacion(110, "Victoria"))
         EstacionHandler.estaciones.append(Estacion.Estacion(111, "Attiki"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(112, "Aghios Nikolaos", 38.01, 23.73))
-        EstacionHandler.estaciones.append(Estacion.Estacion(113, "Kato Patissia",38.01,23.73))
-        EstacionHandler.estaciones.append(Estacion.Estacion(114, "Aghios Eleftherios", 38.02, 23.73))
-        EstacionHandler.estaciones.append(Estacion.Estacion(115, "Ano Patissia", 38.01, 23.73))
+        EstacionHandler.estaciones.append(Estacion.Estacion(112, "Aghios Nikolaos", 38.00751483506223, 23.72802727940956))
+        EstacionHandler.estaciones.append(Estacion.Estacion(113, "Kato Patissia",38.011403374873, 23.729143078325432))
+        EstacionHandler.estaciones.append(Estacion.Estacion(114, "Aghios Eleftherios", 38.02026171288618, 23.733005459223712))
+        EstacionHandler.estaciones.append(Estacion.Estacion(115, "Ano Patissia", 38.023870693338594, 23.73595358730873))
         EstacionHandler.estaciones.append(Estacion.Estacion(116, "Perissos"))
         EstacionHandler.estaciones.append(Estacion.Estacion(117, "Pefkakia"))
         EstacionHandler.estaciones.append(Estacion.Estacion(118, "Nea Ionia"))
@@ -45,20 +44,20 @@ class EstacionHandler:
         EstacionHandler.estaciones.append(Estacion.Estacion(124, "Kifissia"))
 
         # LINEA 2 ROJA (14 estaciones)
-        EstacionHandler.estaciones.append(Estacion.Estacion(201, "Aghios Antonios", 38.01, 23.7))
+        EstacionHandler.estaciones.append(Estacion.Estacion(201, "Aghios Antonios", 38.00675407002947, 23.699491726643075))
         EstacionHandler.estaciones.append(Estacion.Estacion(202, "Sepolia"))
         EstacionHandler.estaciones.append(Estacion.Estacion(203, "Attiki"))
         EstacionHandler.estaciones.append(Estacion.Estacion(204, "Larissa Station"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(205, "Metaxourghio", 37.99, 23.72))
+        EstacionHandler.estaciones.append(Estacion.Estacion(205, "Metaxourghio", 37.98624953252499, 23.720839210933928))
         EstacionHandler.estaciones.append(Estacion.Estacion(206, "Omonia"))
         EstacionHandler.estaciones.append(Estacion.Estacion(207, "Panepistimio"))
         EstacionHandler.estaciones.append(Estacion.Estacion(208, "Syntagma"))
         EstacionHandler.estaciones.append(Estacion.Estacion(209, "Akropoli"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(210, "Sygrou-Fix", 37.96, 23.73))
+        EstacionHandler.estaciones.append(Estacion.Estacion(210, "Sygrou-Fix", 37.964338038418184, 23.726568290097944))
         EstacionHandler.estaciones.append(Estacion.Estacion(211, "Neos Kosmos"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(212, "Aghios Ioannis", 37.96, 23.73))
+        EstacionHandler.estaciones.append(Estacion.Estacion(212, "Aghios Ioannis", 37.956629712245814, 23.734670183005026))
         EstacionHandler.estaciones.append(Estacion.Estacion(213, "Dafni"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(214, "Aghios Dimitrios", 37.94, 23.74))
+        EstacionHandler.estaciones.append(Estacion.Estacion(214, "Aghios Dimitrios", 37.940668890782966, 23.740780697774923))
 
         # LINEA 3 AZUL (20 estaciones)
         EstacionHandler.estaciones.append(Estacion.Estacion(301, "Egaleo"))
@@ -67,7 +66,7 @@ class EstacionHandler:
         EstacionHandler.estaciones.append(Estacion.Estacion(304, "Monastiraki"))
         EstacionHandler.estaciones.append(Estacion.Estacion(305, "Syntagma"))
         EstacionHandler.estaciones.append(Estacion.Estacion(306, "Evangelismos"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(307, "Megaro Moussikis", 37.98, 23.75))
+        EstacionHandler.estaciones.append(Estacion.Estacion(307, "Megaro Moussikis", 37.97934984463451, 23.75287849588745))
         EstacionHandler.estaciones.append(Estacion.Estacion(308, "Ambelokipi"))
         EstacionHandler.estaciones.append(Estacion.Estacion(309, "Panormou"))
         EstacionHandler.estaciones.append(Estacion.Estacion(310, "Katehaki"))
@@ -78,38 +77,55 @@ class EstacionHandler:
         EstacionHandler.estaciones.append(Estacion.Estacion(315, "Halandri"))
         EstacionHandler.estaciones.append(Estacion.Estacion(316, "Doukissis Plakentias"))
         EstacionHandler.estaciones.append(Estacion.Estacion(317, "Pallini"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(318, "Paiania-Kantza", 37.99, 23.87))
-        EstacionHandler.estaciones.append(Estacion.Estacion(319, "Koropi", 37.91, 23.9))
+        EstacionHandler.estaciones.append(Estacion.Estacion(318, "Paiania-Kantza", 37.9854072929238, 23.870406985250174))
+        EstacionHandler.estaciones.append(Estacion.Estacion(319, "Koropi", 37.913286685491364, 23.89597172156))
         EstacionHandler.estaciones.append(Estacion.Estacion(320, "Airport"))
 
         # Escribir en el fichero de texto
         stat: Estacion
         for stat in EstacionHandler.estaciones:
-            stat.writeCoords(file)
+            stat.writeCoords(stat,file)
     
-    # Lee las estaciones desde archivo
     @staticmethod
     def read(file):
+        """ Lee las estaciones desde archivo"""
         datfile = open(file, "r")
         statlines = datfile.readlines()
+        statlines.pop(0)
         for curline in statlines:
             split = curline.split(';')
             num = split[0]
             nam = split[1]
             latit = split[2]
             longit = split[3]
-            stat = Estacion.Estacion((num), nam,float(latit), float(longit))
-            EstacionHandler.lineas[stat.getLinea()].append(stat)
+            stat: Estacion = Estacion((num), nam, float(latit), float(longit))
             EstacionHandler.estaciones.append(stat)
             EstacionHandler.metromap[int(num)] = stat
             EstacionHandler.coolmap[int(num)] = stat.toString()
 
+
     @staticmethod      
     def matrix(file):
+        """Crea la matriz de costes"""
         datfile = open(file, "w")
         st:Estacion ;st2: Estacion
-
+        i= len(EstacionHandler.metromap.values())
         for st in EstacionHandler.metromap.values():
+            if(i != 1):
+                datfile.write(st.name+";")
+            else:
+                 datfile.write(st.name)
+            i=i-1
+
+        datfile.write("\n")  
+        for st in EstacionHandler.metromap.values():
+            append : str = ""
             for st2 in EstacionHandler.metromap.values():
-                datfile.write(str(st.calcDistance(st2))+";")
-            datfile.write("\n")    
+                d= st.calcDistance(st2)
+                append+=(str(d)+";")
+                if(d==0 and st.line != st2.line):
+                    st.trasbordo= st2.number
+                    st2.trasbordo= st.number
+                    EstacionHandler.trasbordos[st.name] = (st.number, st2.number)
+            datfile.write(st.name+";"+append+"\n")
+        print(EstacionHandler.trasbordos)

@@ -1,5 +1,6 @@
 import sys
 import io
+from dotenv import dotenv_values
 import folium 
 import pandas as pd
 from PyQt5.QtWidgets import *
@@ -10,7 +11,8 @@ from PyQt5.uic.properties import QtWidgets
 from lib import EstacionHandler
 from lib.Estacion import Estacion
 
-FILE="lib/data.csv"
+fileE = dotenv_values(".env")["FILE_ESTACIONES"]
+fileM = dotenv_values(".env")["FILE_MATRIX"]
 class MyApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -30,14 +32,14 @@ class MyApp(QWidget):
         cityCoords=[37.97945, 23.71622]
 
         #Actualiza el listado de estaciones
-        EstacionHandler.read(FILE)
+        EstacionHandler.read(fileE)
         
         mapWidget = folium.Map(location=cityCoords, zoom_start=10, control_scale=True)
         
         st: Estacion
         for st in EstacionHandler.estaciones:
             print(st.toString())
-            l=st.getLinea()
+            l=st.getLinea(st)
             iColor: str = lines["COLOR"][l-1]
 
             #Añade el icono del marcador
