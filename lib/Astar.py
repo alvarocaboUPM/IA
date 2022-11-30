@@ -11,53 +11,64 @@ class Astar():
         self.start :Estacion = EstacionHandler.metromap[start]
         self.end : Estacion= EstacionHandler.metromap[end]
         self.h = pd.read_csv(dotenv_values(".env")["FILE_MATRIX"],sep=';')
+        self.h.drop_duplicates()
+        
     
     def routing(self):
         #INIT
+        print("Calculando camino desde {init} hasta {fin}".format(init=self.start.name,
+         fin=self.end.name))
         steps=0
         #OPEN -> Nodos no visitados
         openQ= PriorityQueue() 
         openQ.put((0, steps, self.start)) 
         #CLOSE -> Nodos visitados
         closeQ= {self.start}
-        cost= {Estacion:float}
-        finalCost = {}
+        came_from = {}
+        cost= {} #h_n
+        finalCost = {}  #f_n
         #END INIT
 
         #1. Llenar el Open
         st : Estacion
         adj: Estacion
+        
 
         for st in EstacionHandler.metromap.values():
             cost[st] = float("inf")
             finalCost[st] = float("inf")
             
         cost[self.start] = 0
-        finalCost[self.start] = 0+self.h[self.start.name][self.end.name]
+        finalCost[self.start] = 0+self.h.loc[self.start.name][self.end.name]
         
         while not openQ.empty():
-            n = openQ.get()[2] #Obtenemos y eliminamos el actual de open
+            n:Estacion
+            aux = openQ.get()
+            n = aux[2] #Obtenemos y eliminamos el actual de open
+            print("#{} Buscando en n: {} - {}".format(aux[1],n.name, n.number))
             closeQ.remove(n) #Lo sacamos de los visitados
 
-            if n == self.end:
-                res = [n]
-                while n in closeQ:
-                    n = closeQ[n]
-                    res.append(n)
+            if n.number==self.end.number:
+                res = [n.name]
+                while n in came_from:
+                    n = came_from[n]
+                    res.append(n.name)
                 return list(reversed(res))
             
             for adj in n.calcAdjacents(EstacionHandler.metromap):
-                print(adj.name)
-                tmp = self.h[st.name][adj.name]
+                tmp = cost[n]+1
+
                 if(tmp < cost[adj]):
-                    closeQ[adj] = n
+                    came_from[adj]= n
                     cost[adj] = tmp
+                    finalCost[adj] = tmp
                     if adj not in closeQ:
+                        print(" -> Adding to open and close ->"+ adj.name)
                         steps +=1
-                        openQ.put(finalCost[adj], steps, adj)
+                        openQ.put((finalCost[adj], steps, adj))
                         closeQ.add(adj)
+
             if n != self.start:
-                print("CUlo")
                 pass
                 # curr.make_closed() # grafico: marcar st como visitado
 

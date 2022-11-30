@@ -7,7 +7,7 @@ from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 from geopy.location import Location
 
-
+from lib.EstacionHandler import EstacionHandler
 
 class Estacion:
     # Constructor de la clase estación
@@ -18,8 +18,11 @@ class Estacion:
         self.long = long
         self.trasbordo:int = -1
         self.line = Estacion.getLinea(self)
+
+    # def __eq__(self, __o) -> bool:
+    #     if isinstance(__o, Estacion):
+    #         return self.number==__o.number and self.name==__o.name
     
-    @staticmethod
     # Busca latitud y longitud para cada estacion
     def writeCoords(self, file):
         #Defines
@@ -29,6 +32,7 @@ class Estacion:
         i=0; querytext=None
         #Execution
         datfile = open(file, "a")
+        jsonfile = open("data/json/"+str(self.line)+".json","a")
 
         #Utilizamos la API de geopy para rellenar las coordenadas
         if(self.lat == 0.0 and self.long == 0.0):
@@ -42,12 +46,20 @@ class Estacion:
                 #Setting de la Estación
                 self.lat = coordenadas.latitude
                 self.long = coordenadas.longitude
-
+        
+        
+        json = "["+str(self.long)+","+str(self.lat)+"],\n"
+        if(self.firstOrLast()==1):
+            print("ULTIMA")
+            json = "["+str(self.long)+","+str(self.lat)+"]\n"
         wrstring += sm + str(self.lat) + sm + str(self.long)+"\n"
         #Escribo en el csv
-        print(wrstring)
+        
         datfile.write(wrstring)
+        
+        jsonfile.write(json)
         datfile.close()
+        jsonfile.close()
 
     #Prints formated station
     def toString(self):
@@ -64,6 +76,16 @@ class Estacion:
     def getLinea(self: Self)->int:
         return int(float(self.number) // 100) #Redondeo hacia abajo (floor)
 
+    def firstOrLast(self:Self)-> int:
+        if(int(self.number) % 100 ==1):
+            return 0
+        try:
+            if(EstacionHandler.estaciones[EstacionHandler.estaciones.index(self) + 1].line != self.line ):
+                return 1
+        except IndexError:
+            return 1
+        return -1
+
     # Devuelve las estaciones adyacentes en una lista
     def calcAdjacents(self, map, ok =0):
         list=[]
@@ -79,3 +101,4 @@ class Estacion:
         if(self.trasbordo != -1 and ok <1):
             list +=(Estacion.calcAdjacents(map[int(self.trasbordo)],map,1))
         return list
+

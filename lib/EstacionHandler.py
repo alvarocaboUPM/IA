@@ -1,6 +1,7 @@
 from pprint import pprint
 
 from dotenv import dotenv_values
+import pandas as pd
 from lib import Estacion
 
 fileE = dotenv_values(".env")["FILE_ESTACIONES"]
@@ -11,6 +12,7 @@ class EstacionHandler:
     metromap= {}
     coolmap={}
     trasbordos={}
+    lines = {1:{}, 2:{}, 3:{}}
 
 
     @staticmethod
@@ -24,8 +26,8 @@ class EstacionHandler:
         # AQUI VAN LOS NOMBRES Y NUMEROS DE LAS ESTACIONES
 
         # LINEA 1 VERDE (24 estaciones)
-        EstacionHandler.estaciones.append(Estacion.Estacion(101, "Piraeus"))
-        EstacionHandler.estaciones.append(Estacion.Estacion(102, "Neo Faliro",37.96,23.68))
+        EstacionHandler.estaciones.append(Estacion.Estacion(101, "Piraeus", 37.949156606631064, 23.64318208935662))
+        EstacionHandler.estaciones.append(Estacion.Estacion(102, "Neo Faliro",37.94509716973799, 23.665246555351207))
         EstacionHandler.estaciones.append(Estacion.Estacion(103, "Moschato"))
         EstacionHandler.estaciones.append(Estacion.Estacion(104, "Kallithea"))
         EstacionHandler.estaciones.append(Estacion.Estacion(105, "Tavros"))
@@ -85,13 +87,27 @@ class EstacionHandler:
         EstacionHandler.estaciones.append(Estacion.Estacion(317, "Pallini"))
         EstacionHandler.estaciones.append(Estacion.Estacion(318, "Paiania-Kantza", 37.9854072929238, 23.870406985250174))
         EstacionHandler.estaciones.append(Estacion.Estacion(319, "Koropi", 37.913286685491364, 23.89597172156))
-        EstacionHandler.estaciones.append(Estacion.Estacion(320, "Airport"))
+        EstacionHandler.estaciones.append(Estacion.Estacion(320, "Airport",37.93691681665653, 23.9447518452654))
 
+        colors = pd.read_csv(filepath_or_buffer='Utils/colors.csv', 
+                            sep=';')
         # Escribir en el fichero de texto
+        for i in range(1,4):
+         file = "data/json/"+str(i)+".json"
+         print(file)
+         jsonfile = open(file, "w")
+         jsonfile.write(jtext1.format(color=colors["COLOR"][i-1]))
+         jsonfile.close()
+        #GeoJson files
         stat: Estacion
         for stat in EstacionHandler.estaciones:
-            stat.writeCoords(stat,fileE)
+            stat.writeCoords(fileE)
         EstacionHandler.read()
+
+        for i in range(1,4):
+         jsonfile = open("data/json/"+str(i)+".json", "a")
+         jsonfile.write(jtext2)
+         jsonfile.close()
         
     @staticmethod
     def read():
@@ -105,7 +121,7 @@ class EstacionHandler:
             nam = split[1]
             latit = split[2]
             longit = split[3]
-            stat: Estacion = Estacion((num), nam, float(latit), float(longit))
+            stat: Estacion = Estacion.Estacion((num), nam, float(latit), float(longit))
             EstacionHandler.estaciones.append(stat)
             EstacionHandler.metromap[int(num)] = stat
             EstacionHandler.coolmap[int(num)] = stat.toString()
@@ -128,7 +144,9 @@ class EstacionHandler:
         datfile.write("\n")  
         for st in EstacionHandler.metromap.values():
             append : str = ""
-            for st2 in EstacionHandler.metromap.values():
+            if(st.trasbordo !=-1):
+                    continue
+            for st2 in EstacionHandler.metromap.values(): 
                 d= st.calcDistance(st2)
                 append+=(str(d)+";")
                 if(d==0 and st.line != st2.line):
@@ -136,4 +154,22 @@ class EstacionHandler:
                     st2.trasbordo= st.number
                     EstacionHandler.trasbordos[st.name] = (st.number, st2.number)
             datfile.write(st.name+";"+append+"\n")
+        #pprint(EstacionHandler.trasbordos)
+        datfile.close()
       
+jtext1= """{{
+"type": "FeatureCollection",
+"features": [
+{{
+"type":"Feature",
+"properties": {{
+    "fillColor":"#{color}"
+}},
+"geometry": {{
+"type": "LineString",
+"coordinates": ["""
+jtext2="""]
+                }
+        }
+    ]
+}"""
