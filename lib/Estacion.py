@@ -50,13 +50,11 @@ class Estacion:
         
         json = "["+str(self.long)+","+str(self.lat)+"],\n"
         if(self.firstOrLast()==1):
-            print("ULTIMA")
             json = "["+str(self.long)+","+str(self.lat)+"]\n"
         wrstring += sm + str(self.lat) + sm + str(self.long)+"\n"
         #Escribo en el csv
         
         datfile.write(wrstring)
-        
         jsonfile.write(json)
         datfile.close()
         jsonfile.close()

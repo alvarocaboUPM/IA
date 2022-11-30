@@ -33,14 +33,9 @@ class MyApp(QWidget):
 
         mapWidget = folium.Map(location=cityCoords, zoom_start=10, control_scale=True)
         
-        
         st: Estacion
         for st in EstacionHandler.estaciones:
-            print(st.toString())
-            
             iColor: str = lines["COLOR"][st.line-1]
-            
-
             #Añade el icono del marcador
             folium.Marker(location=[st.lat, st.long], 
                           popup=st.name,

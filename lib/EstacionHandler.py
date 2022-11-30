@@ -94,7 +94,6 @@ class EstacionHandler:
         # Escribir en el fichero de texto
         for i in range(1,4):
          file = "data/json/"+str(i)+".json"
-         print(file)
          jsonfile = open(file, "w")
          jsonfile.write(jtext1.format(color=colors["COLOR"][i-1]))
          jsonfile.close()
